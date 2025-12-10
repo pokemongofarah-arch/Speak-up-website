@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Speak Up – Admin</title>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: 40px auto; }
+    .comment { padding: 10px; border-bottom: 1px solid #ccc; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+<h2>Speak Up – All Anonymous Submissions</h2>
+<input type="password" id="pass" placeholder="Enter admin password">
+<button onclick="unlock()">Open</button>
+
+<div id="content" style="display:none;">
+  <h3>Comments:</h3>
+  <div id="list"></div>
+</div>
+
+<script type="module">
+  const ADMIN_PASSWORD = "1234";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD_8S-6hhRVT7mamhHX0CUFORoflLvKpSs",
+    authDomain: "speak-up-c35cb.firebaseapp.com",
+    databaseURL: "https://speak-up-c35cb-default-rtdb.firebaseio.com",
+    projectId: "speak-up-c35cb",
+    storageBucket: "speak-up-c35cb.firebasestorage.app",
+    messagingSenderId: "335579364924",
+    appId: "1:335579364924:web:d265d625fbcc0094b28d39",
+    measurementId: "G-HTGK4CWTWD"
+  };
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  window.unlock = function() {
+    if (document.getElementById("pass").value === ADMIN_PASSWORD) {
+      document.getElementById("content").style.display = "block";
+      loadComments();
+    } else {
+      alert("Wrong password");
+    }
+  }
+
+  function loadComments() {
+    onValue(ref(db, "comments"), (snapshot) => {
+      let html = "";
+      snapshot.forEach(child => {
+        const d = child.val();
+        html += `<div class="comment">${d.text}</div>`;
+      });
+      document.getElementById("list").innerHTML = html;
+    });
+  }
+</script>
+
+</body>
+</html>
